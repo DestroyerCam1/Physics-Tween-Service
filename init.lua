@@ -80,6 +80,22 @@ local function _getCFrameOrientation(cframe: CFrame): Vector3
 	return Vector3.new(math.deg(rx), math.deg(ry), math.deg(rz))
 end
 
+local function _applyPhysics(instance: Instance, linearVelocity: Vector3, angularVelocity: Vector3)
+	if not instance:IsA("Model") then
+		instance.AssemblyLinearVelocity = linearVelocity
+		instance.AssemblyAngularVelocity = angularVelocity
+	else
+		for _, part in instance:GetDescendants() do
+			if not part:IsA("BasePart") then
+				continue
+			end
+
+			part.AssemblyLinearVelocity = linearVelocity
+			part.AssemblyAngularVelocity = angularVelocity
+		end
+	end
+end
+
 function PhysicsTweenService:Create(
 	instance: Instance,
 	tweenInfo: TweenInfo,
@@ -127,9 +143,8 @@ function PhysicsTween._unbind(self: PhysicsTween): ()
 		RunService:UnbindFromRenderStep(tag)
 	end
 
-	if self._propertyTable.CFrame ~= nil and not self.Instance:IsA("Model") then
-		self.Instance.AssemblyLinearVelocity = Vector3.zero
-		self.Instance.AssemblyAngularVelocity = Vector3.zero
+	if self._propertyTable.CFrame ~= nil then
+		_applyPhysics(self.Instance, Vector3.zero, Vector3.zero)
 	end
 
 	if workspace:FindFirstChild(tag) then
@@ -164,23 +179,8 @@ function PhysicsTween._stepped(self: PhysicsTween, deltaTime: number): ()
 			local angularVelocity = Vector3.new((self.Instance:GetPivot():ToObjectSpace(newCFrame)):ToEulerAngles())
 				* (1 / deltaTime)
 
-			if self.Instance:IsA("Model") then
-				for _, part in self.Instance:GetDescendants() do
-					if not part:IsA("BasePart") then
-						continue
-					end
-
-					part.AssemblyLinearVelocity = velocity
-					part.AssemblyAngularVelocity = angularVelocity
-				end
-
-				self.Instance:PivotTo(newCFrame)
-			else
-				self.Instance.AssemblyLinearVelocity = velocity
-				self.Instance.AssemblyAngularVelocity = angularVelocity
-
-				self.Instance.CFrame = newCFrame
-			end
+			_applyPhysics(self.Instance, velocity, angularVelocity)
+			self.Instance:PivotTo(newCFrame)
 		else
 			self.Instance[prop] =
 				Lerps[typeof(goal)](self._initialProperties[prop], self._propertyTable[prop])(alphaPrime)
