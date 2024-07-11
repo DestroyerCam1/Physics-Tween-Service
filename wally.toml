@@ -1,0 +1,9 @@
+[package]
+name = "TheDestroyerCam/physics-tween-service"
+description = "Physics based tween service"
+version = "1.0.0"
+license = "MIT"
+authors = ["Cameron Smith <DestroyerCam1@gmail.com>"]
+realm = "shared"
+
+
