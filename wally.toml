@@ -1,9 +1,10 @@
 [package]
-name = "TheDestroyerCam/physics-tween-service"
-description = "Physics based tween service"
-version = "1.0.0"
+name = "thedestroyercam/physics-tween-service"
+description = "a physics based tween system"
+version = "0.1.4"
 license = "MIT"
 authors = ["Cameron Smith <DestroyerCam1@gmail.com>"]
+registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 

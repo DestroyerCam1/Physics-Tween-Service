@@ -264,12 +264,12 @@ function PhysicsTween.Play(self: PhysicsTween): ()
 	table.insert(
 		self._connections,
 		self.Instance.Destroying:Connect(function()
-			self:_unbind()
+			self:Cancel()
 		end)
 	)
 
 	if RunService:IsServer() then
-		table.insert(self._connectionsRunService.PreSimulation:Connect(function(...)
+		table.insert(self._connections, RunService.PreSimulation:Connect(function(...)
 			self:_stepped(...)
 		end))
 	else
